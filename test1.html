@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Dashboard: Weather, Time & Stocks</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            width: max-content;
+            animation: marquee 25s linear infinite;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
+
+    <div class="bg-slate-950 border-b border-slate-800 py-2.5 overflow-hidden sticky top-0 z-50 shadow-md">
+        <div class="relative w-full flex items-center">
+            <div id="stock-marquee" class="animate-marquee gap-8 text-sm font-semibold tracking-wide">
+                <div class="flex gap-8" id="ticker-content">
+                    <span class="flex items-center gap-1.5"><span class="text-slate-400">SPY</span> <span>$510.45</span> <span class="text-emerald-400 text-xs">▲ +1.2%</span></span>
+                    <span class="flex items-center gap-1.5"><span class="text-slate-400">QQQ</span> <span>$438.90</span> <span class="text-emerald-400 text-xs">▲ +1.8%</span></span>
+                    <span class="flex items-center gap-1.5"><span class="text-slate-400">AAPL</span> <span>$178.50</span> <span class="text-rose-400 text-xs">▼ -0.4%</span></span>
+                    <span class="flex items-center gap-1.5"><span class="text-slate-400">MSFT</span> <span>$415.20</span> <span class="text-emerald-400 text-xs">▲ +2.1%</span></span>
+                    <span class="flex items-center gap-1.5"><span class="text-slate-400">NVDA</span> <span>$875.12</span> <span class="text-emerald-400 text-xs">▲ +4.6%</span></span>
+                    <span class="flex items-center gap-1.5"><span class="text-slate-400">TSLA</span> <span>$175.30</span> <span class="text-rose-400 text-xs">▼ -2.3%</span></span>
+                    <span class="flex items-center gap-1.5"><span class="text-slate-400">BTC/USD</span> <span>$67,420</span> <span class="text-emerald-400 text-xs">▲ +0.9%</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 md:p-8 flex flex-col gap-6">
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-850 p-6 rounded-2xl border border-slate-800 shadow-xl">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">Command Dashboard</h1>
+                <p class="text-slate-400 text-sm mt-0.5" id="user-location-tag">Checking local environment...</p>
+            </div>
+            
+            <form id="search-form" class="relative w-full md:w-80 flex gap-2">
+                <div class="relative flex-grow">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                    <input type="text" id="search-input" placeholder="Search major city (e.g., Tokyo, London)..." 
+                           class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500 transition-colors">
+                </div>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-xl text-sm transition-colors cursor-pointer">
+                    Go
+                </button>
+            </form>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="bg-slate-850 p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between min-h-[220px]">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400">Time & Position</p>
+                        <h3 class="text-xl font-bold mt-1" id="clock-city">Local System</h3>
+                    </div>
+                    <div class="p-2 bg-blue-500/10 rounded-xl text-blue-400">
+                        <i data-lucide="clock" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                
+                <div class="my-4">
+                    <div class="text-4xl font-mono font-bold tracking-tight text-slate-100" id="live-clock">00:00:00</div>
+                    <p class="text-xs text-slate-400 mt-1" id="live-date">...</p>
+                </div>
+
+                <div class="pt-3 border-t border-slate-800/60 flex justify-between text-xs text-slate-400">
+                    <span>Timezone:</span>
+                    <span class="font-mono text-slate-200" id="timezone-label">UTC</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-850 p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between min-h-[220px]">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Current Conditions</p>
+                        <h3 class="text-xl font-bold mt-1" id="weather-city">Atmosphere</h3>
+                    </div>
+                    <div class="p-2 bg-emerald-500/10 rounded-xl text-emerald-400" id="weather-icon-box">
+                        <i data-lucide="cloud-sun" class="w-5 h-5"></i>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 my-3">
+                    <div class="text-5xl font-bold tracking-tight text-slate-100" id="weather-temp">--°F</div>
+                    <div>
+                        <div class="text-sm font-semibold text-slate-200" id="weather-condition">Loading Data</div>
+                        <div class="text-xs text-slate-400 flex gap-2 mt-0.5">
+                            <span>H: <strong id="weather-high">--°</strong></span>
+                            <span>L: <strong id="weather-low">--°</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-800/60 grid grid-cols-2 gap-2 text-xs text-slate-400">
+                    <div class="flex items-center gap-1.5">
+                        <i data-lucide="droplets" class="w-3.5 h-3.5 text-blue-400"></i>
+                        <span>Humidity: <strong class="text-slate-200" id="weather-humidity">--%</strong></span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <i data-lucide="wind" class="w-3.5 h-3.5 text-slate-400"></i>
+                        <span>Wind: <strong class="text-slate-200" id="weather-wind">-- mph</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-850 p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-purple-400">Market Monitor</p>
+                            <h3 class="text-xl font-bold mt-1">Core Watchlist</h3>
+                        </div>
+                        <div class="p-2 bg-purple-500/10 rounded-xl text-purple-400">
+                            <i data-lucide="trending-up" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3" id="watchlist-container">
+                        </div>
+                </div>
+                <div class="text-[10px] text-slate-500 mt-4 text-right">
+                    Updates live every few seconds
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Data Vault containing presets for locations to simulate API endpoints smoothly
+        const cityRegistry = {
+            "local": { name: "Berkeley", zone: "America/Los_Angeles", temp: 68, cond: "Partly Cloudy", icon: "cloud-sun", humidity: 62, wind: 7, high: 72, low: 54 },
+            "tokyo": { name: "Tokyo", zone: "Asia/Tokyo", temp: 72, cond: "Clear Sky", icon: "sun", humidity: 45, wind: 5, high: 78, low: 63 },
+            "london": { name: "London", zone: "Europe/London", temp: 57, cond: "Light Drizzle", icon: "cloud-rain", humidity: 88, wind: 14, high: 61, low: 48 },
+            "new york": { name: "New York", zone: "America/New_York", temp: 74, cond: "Sunny", icon: "sun", humidity: 50, wind: 9, high: 80, low: 66 },
+            "paris": { name: "Paris", zone: "Europe/Paris", temp: 64, cond: "Overcast", icon: "cloud", humidity: 70, wind: 11, high: 68, low: 52 },
+            "sydney": { name: "Sydney", zone: "Australia/Sydney", temp: 59, cond: "Clear Night", icon: "moon", humidity: 55, wind: 12, high: 64, low: 50 }
+        };
+
+        let currentZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
+        let clockInterval = null;
+
+        // Initialize Stock Watchlist Core
+        const stocks = [
+            { symbol: 'NVDA', price: 875.12, change: 4.62 },
+            { symbol: 'AAPL', price: 178.50, change: -0.42 },
+            { symbol: 'MSFT', price: 415.20, change: 2.15 },
+            { symbol: 'SPY', price: 510.45, change: 1.22 }
+        ];
+
+        // Clone marquee data to generate infinite scrolling seamless illusion
+        const marqueeBox = document.getElementById('stock-marquee');
+        const originalContent = document.getElementById('ticker-content');
+        const clone = originalContent.cloneNode(true);
+        marqueeBox.appendChild(clone);
+
+        // Update the visual representation of Time and Date matching chosen target Zone
+        function engineTick() {
+            const now = new Date();
+            
+            const timeConfig = { timeZone: currentZone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const dateConfig = { timeZone: currentZone, weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
+            
+            document.getElementById('live-clock').textContent = now.toLocaleTimeString('en-US', timeConfig);
+            document.getElementById('live-date').textContent = now.toLocaleDateString('en-US', dateConfig);
+        }
+
+        function startClockEngine() {
+            if (clockInterval) clearInterval(clockInterval);
+            engineTick();
+            clockInterval = setInterval(engineTick, 1000);
+        }
+
+        // Handle applying new environment configurations
+        function dispatchDashboardUpdate(cityKey) {
+            const data = cityRegistry[cityKey.toLowerCase()] || {
+                name: cityKey.charAt(0).toUpperCase() + cityKey.slice(1),
+                zone: "UTC", temp: 60, cond: "Standard Conditions", icon: "cloud", humidity: 50, wind: 8, high: 65, low: 52
+            };
+
+            currentZone = data.zone;
+            document.getElementById('timezone-label').textContent = data.zone;
+            document.getElementById('clock-city').textContent = data.name;
+            
+            // Weather Card Rendering
+            document.getElementById('weather-city').textContent = data.name;
+            document.getElementById('weather-temp').textContent = `${data.temp}°F`;
+            document.getElementById('weather-condition').textContent = data.cond;
+            document.getElementById('weather-high').textContent = `${data.high}°`;
+            document.getElementById('weather-low').textContent = `${data.low}°`;
+            document.getElementById('weather-humidity').textContent = `${data.humidity}%`;
+            document.getElementById('weather-wind').textContent = `${data.wind} mph`;
+
+            // Dynamic Icon Switching via Lucide
+            const iconBox = document.getElementById('weather-icon-box');
+            iconBox.innerHTML = `<i data-lucide="${data.icon}" class="w-5 h-5"></i>`;
+            
+            startClockEngine();
+            lucide.createIcons(); // Force refresh new vector icon instances
+        }
+
+        // Live Mock stock price fluctuator to give the UI life
+        function simulateMarketTick() {
+            const container = document.getElementById('watchlist-container');
+            container.innerHTML = '';
+
+            stocks.forEach(stock => {
+                // Introduce subtle mathematical variance to prices
+                const drift = (Math.random() - 0.48) * 0.5;
+                stock.price = Math.max(1, stock.price + drift);
+                stock.change += drift * 0.1;
+
+                const statusColor = stock.change >= 0 ? 'text-emerald-400' : 'text-rose-400';
+                const statusSymbol = stock.change >= 0 ? '▲' : '▼';
+
+                const element = document.createElement('div');
+                element.className = "flex justify-between items-center bg-slate-900/60 px-4 py-2.5 rounded-xl border border-slate-800/40";
+                element.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="font-bold text-sm tracking-wide text-slate-200">${stock.symbol}</span>
+                        <span class="text-[10px] text-slate-500">USD Market</span>
+                    </div>
+                    <div class="text-right flex flex-col">
+                        <span class="font-mono font-bold text-sm text-slate-100">$${stock.price.toFixed(2)}</span>
+                        <span class="text-xs font-medium ${statusColor}">${statusSymbol} ${stock.change.toFixed(2)}%</span>
+                    </div>
+                `;
+                container.appendChild(element);
+            });
+        }
+
+        // Capture user input forms
+        document.getElementById('search-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('search-input');
+            if (input.value.trim()) {
+                dispatchDashboardUpdate(input.value.trim());
+                input.value = '';
+            }
+        });
+
+        // Setup environment defaults on window mount
+        window.addEventListener('DOMContentLoaded', () => {
+            // Check if local parameters can map directly to registry
+            const systemZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            document.getElementById('user-location-tag').textContent = `System Zone: ${systemZone}`;
+            
+            dispatchDashboardUpdate("local");
+            simulateMarketTick();
+            setInterval(simulateMarketTick, 3500); // Trigger periodic background financial fluctuations
+        });
+    </script>
+</body>
+</html>
